@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>AgroConecta Lite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      background: #165b33;
+      color: #fff;
+      padding: 12px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 16px auto;
+      padding: 0 12px 24px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #ddd;
+      flex-wrap: wrap;
+    }
+
+    .tab-button {
+      border: none;
+      background: transparent;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid transparent;
+      border-bottom: none;
+    }
+
+    .tab-button.active {
+      background: #fff;
+      border-color: #ccc;
+      border-bottom-color: #fff;
+      font-weight: 600;
+    }
+
+    .tab {
+      display: none;
+      background: #fff;
+      border-radius: 0 8px 8px 8px;
+      border: 1px solid #ccc;
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .tab.active {
+      display: block;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px 18px;
+      margin-bottom: 16px;
+      align-items: flex-end;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #165b33;
+      box-shadow: 0 0 0 1px rgba(22,91,51,0.2);
+    }
+
+    .btn {
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: #165b33;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e0e4e7;
+      color: #222;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f4f6f8;
+      font-weight: 600;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #eaf6ec;
+      color: #165b33;
+      margin-right: 4px;
+    }
+
+    .tag-warning {
+      background: #fff4e5;
+      color: #b36b00;
+    }
+
+    .empty {
+      font-size: 0.85rem;
+      color: #777;
+      margin-top: 8px;
+    }
+
+    .stars {
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .stars .star {
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 2px;
+      user-select: none;
+    }
+
+    .freight-summary {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f4f6f8;
+      font-size: 0.85rem;
+    }
+
+    .freight-summary strong {
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px 12px;
+      margin-bottom: 10px;
+      align-items: flex-end;
+    }
+
+    .cart {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px dashed #ccc;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.15rem;
+      }
+      .tab {
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AgroConecta Lite</h1>
+    <p>Piloto de plataforma para conectar agricultores y compradores urbanos</p>
+  </header>
+
+  <main class="container">
+    <div class="tabs">
+      <button class="tab-button active" data-tab="agricultor">Registro Agricultor</button>
+      <button class="tab-button" data-tab="comprador">Registro Comprador</button>
+      <button class="tab-button" data-tab="matches">Matches, flete y carrito</button>
+    </div>
+
+    <!-- TAB AGRICULTOR -->
+    <section id="tab-agricultor" class="tab active">
+      <h2>Registro de oferta (agricultor)</h2>
+      <p class="hint">Registra productos disponibles. La app calcula un rango de precio recomendado usando una tabla de referencia (IA simple).</p>
+      <form id="form-agricultor">
+        <div>
+          <label for="agriNombre">Nombre del agricultor</label>
+          <input id="agriNombre" type="text" required />
+        </div>
+        <div>
+          <label for="agriUbicacion">Municipio / vereda</label>
+          <input id="agriUbicacion" type="text" required />
+        </div>
+        <div>
+          <label for="agriProducto">Producto</label>
+          <select id="agriProducto" required>
+            <option value="">Selecciona…</option>
+            <option value="tomate">Tomate</option>
+            <option value="cebolla">Cebolla</option>
+            <option value="platano">Plátano</option>
+            <option value="papa">Papa</option>
+            <option value="otro">Otro (especificar en observaciones)</option>
+          </select>
+        </div>
+        <div>
+          <label for="agriCantidad">Cantidad disponible</label>
+          <input id="agriCantidad" type="number" min="0" step="0.1" required />
+        </div>
+        <div>
+          <label for="agriUnidad">Unidad</label>
+          <select id="agriUnidad" required>
+            <option value="kg">Kilogramos</option>
+            <option value="bulto">Bulto</option>
+            <option value="caja">Caja</option>
+          </select>
+        </div>
+        <div>
+          <label for="agriPrecio">Precio que espera (COP por unidad)</label>
+          <input id="agriPrecio" type="number" min="0" step="50" required />
+        </div>
+        <div>
+          <label for="agriFecha">Fecha aproximada de entrega</label>
+          <input id="agriFecha" type="date" />
+        </div>
+        <div>
+          <label for="agriNotas">Observaciones</label>
+          <input id="agriNotas" type="text" placeholder="Calidad, variedad, etc. (opcional)" />
+        </div>
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">Guardar oferta</button>
+          <button type="button" id="btnLimpiarOfertas" class="btn btn-secondary">Borrar todas (demo)</button>
+        </div>
+      </form>
+
+      <h3>Ofertas registradas</h3>
+      <div id="tablaOfertasWrapper"></div>
+    </section>
+
+    <!-- TAB COMPRADOR -->
+    <section id="tab-comprador" class="tab">
+      <h2>Registro de demanda (comprador)</h2>
+      <p class="hint">Registra necesidades de compra de fruvers, restaurantes u otros compradores urbanos.</p>
+      <form id="form-comprador">
+        <div>
+          <label for="compNombre">Nombre del comprador / negocio</label>
+          <input id="compNombre" type="text" required />
+        </div>
+        <div>
+          <label for="compUbicacion">Ciudad / barrio</label>
+          <input id="compUbicacion" type="text" required />
+        </div>
+        <div>
+          <label for="compProducto">Producto</label>
+          <select id="compProducto" required>
+            <option value="">Selecciona…</option>
+            <option value="tomate">Tomate</option>
+            <option value="cebolla">Cebolla</option>
+            <option value="platano">Plátano</option>
+            <option value="papa">Papa</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div>
+          <label for="compCantidad">Cantidad requerida</label>
+          <input id="compCantidad" type="number" min="0" step="0.1" required />
+        </div>
+        <div>
+          <label for="compPrecioMax">Precio máximo (COP por unidad)</label>
+          <input id="compPrecioMax" type="number" min="0" step="50" required />
+        </div>
+        <div>
+          <label for="compFecha">Fecha en que necesita el producto</label>
+          <input id="compFecha" type="date" />
+        </div>
+        <div>
+          <label for="compNotas">Observaciones</label>
+          <input id="compNotas" type="text" placeholder="Condiciones de entrega, calidad, etc." />
+        </div>
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">Guardar demanda</button>
+          <button type="button" id="btnLimpiarDemandas" class="btn btn-secondary">Borrar todas (demo)</button>
+        </div>
+      </form>
+
+      <h3>Demandas registradas</h3>
+      <div id="tablaDemandasWrapper"></div>
+    </section>
+
+    <!-- TAB MATCHES -->
+    <section id="tab-matches" class="tab">
+      <h2>Matches, flete y carrito</h2>
+      <p class="hint">
+        Usa los filtros para buscar matches por producto, ciudad o precio. Luego puedes ver el flete estimado y agregar operaciones a un carrito de compra.
+      </p>
+
+      <div class="btn-group" style="margin-bottom:8px;">
+        <button id="btnSeedDemo" class="btn btn-secondary">Cargar datos de prueba (20 ofertas / 20 demandas)</button>
+        <button id="btnRefrescarMatches" class="btn btn-secondary">Actualizar matches</button>
+      </div>
+
+      <div class="filters">
+        <div>
+          <label for="filtroProducto">Filtrar por producto</label>
+          <select id="filtroProducto">
+            <option value="">Todos</option>
+            <option value="tomate">Tomate</option>
+            <option value="cebolla">Cebolla</option>
+            <option value="platano">Plátano</option>
+            <option value="papa">Papa</option>
+          </select>
+        </div>
+        <div>
+          <label for="filtroCiudad">Filtrar por ciudad/municipio</label>
+          <input id="filtroCiudad" type="text" placeholder="Ej: Bogotá" />
+        </div>
+        <div>
+          <label for="filtroPrecioMax">Filtrar por precio agricultor ≤ (COP)</label>
+          <input id="filtroPrecioMax" type="number" min="0" step="50" />
+        </div>
+      </div>
+
+      <div id="tablaMatchesWrapper"></div>
+      <div id="freightSummary" class="freight-summary"></div>
+
+      <div class="cart">
+        <h3>Carrito de compra (matches confirmados)</h3>
+        <div id="cartWrapper"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Tabla de precios de referencia (COP por unidad)
+    const priceTable = {
+      tomate: 2500,
+      cebolla: 1800,
+      platano: 2200,
+      papa: 2000
+    };
+
+    let ofertas = [];
+    let demandas = [];
+    let ratings = {};
+    let cart = [];
+
+    function cargarDesdeStorage() {
+      try {
+        const o = localStorage.getItem("agro_ofertas");
+        const d = localStorage.getItem("agro_demandas");
+        const r = localStorage.getItem("agro_ratings");
+        const c = localStorage.getItem("agro_cart");
+        ofertas = o ? JSON.parse(o) : [];
+        demandas = d ? JSON.parse(d) : [];
+        ratings = r ? JSON.parse(r) : {};
+        cart = c ? JSON.parse(c) : [];
+      } catch (e) {
+        ofertas = [];
+        demandas = [];
+        ratings = {};
+        cart = [];
+      }
+    }
+
+    function guardarEnStorage() {
+      localStorage.setItem("agro_ofertas", JSON.stringify(ofertas));
+      localStorage.setItem("agro_demandas", JSON.stringify(demandas));
+      localStorage.setItem("agro_ratings", JSON.stringify(ratings));
+      localStorage.setItem("agro_cart", JSON.stringify(cart));
+    }
+
+    function formatoCop(valor) {
+      if (valor === null || valor === undefined || isNaN(valor)) return "";
+      return valor.toLocaleString("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0
+      });
+    }
+
+    function getPrecioReferencia(productoValor) {
+      const clave = (productoValor || "").toLowerCase();
+      return priceTable[clave] || null;
+    }
+
+    // ----- RATING -----
+    function getRating(nombre) {
+      const r = ratings[nombre];
+      if (!r) return 0;
+      return r.count > 0 ? r.sum / r.count : 0;
+    }
+
+    function addRating(nombre, score) {
+      if (!ratings[nombre]) {
+        ratings[nombre] = { sum: 0, count: 0 };
+      }
+      ratings[nombre].sum += score;
+      ratings[nombre].count += 1;
+      guardarEnStorage();
+    }
+
+    function renderStarsHtml(nombre) {
+      const avg = getRating(nombre);
+      let html = "";
+      html += '<span class="tag">' +
+        (avg ? "⭐ " + avg.toFixed(1) + "/5" : "Sin calificar") +
+        "</span><br>";
+      html += '<div class="stars" data-name="' + nombre + '">';
+      for (let i = 1; i <= 5; i++) {
+        const filled = avg >= i - 0.5;
+        html += '<span class="star" data-score="' + i + '">' +
+          (filled ? "★" : "☆") +
+          "</span>";
+      }
+      html += "</div>";
+      return html;
+    }
+
+    // ----- RENDER OFERTAS -----
+    function renderOfertas() {
+      const cont = document.getElementById("tablaOfertasWrapper");
+      if (!ofertas.length) {
+        cont.innerHTML = '<p class="empty">Aún no hay ofertas registradas.</p>';
+        return;
+      }
+      let html = '<table><thead><tr>' +
+        '<th>Agricultor</th><th>Ubicación</th><th>Producto</th><th>Cantidad</th>' +
+        '<th>Precio esperado</th><th>Precio ref.</th><th>Rango recomendado</th><th>Confianza</th>' +
+        '</tr></thead><tbody>';
+
+      ofertas.forEach(o => {
+        const rango = o.precioRef
+          ? formatoCop(o.precioMin) + " – " + formatoCop(o.precioMax)
+          : '<span class="tag tag-warning">Sin referencia</span>';
+        const avg = getRating(o.nombre);
+        const confTag = avg
+          ? '<span class="tag">⭐ ' + avg.toFixed(1) + "/5</span>"
+          : '<span class="tag tag-warning">Sin datos</span>';
+
+        html += "<tr>" +
+          "<td>" + o.nombre + "</td>" +
+          "<td>" + o.ubicacion + "</td>" +
+          "<td>" + o.productoLabel + "</td>" +
+          "<td>" + o.cantidad + " " + o.unidad + "</td>" +
+          "<td>" + formatoCop(o.precio) + "</td>" +
+          "<td>" + (o.precioRef ? formatoCop(o.precioRef) : "-") + "</td>" +
+          "<td>" + rango + "</td>" +
+          "<td>" + confTag + "</td>" +
+          "</tr>";
+      });
+
+      html += "</tbody></table>";
+      cont.innerHTML = html;
+    }
+
+    // ----- RENDER DEMANDAS -----
+    function renderDemandas() {
+      const cont = document.getElementById("tablaDemandasWrapper");
+      if (!demandas.length) {
+        cont.innerHTML = '<p class="empty">Aún no hay demandas registradas.</p>';
+        return;
+      }
+      let html = '<table><thead><tr>' +
+        '<th>Comprador</th><th>Ubicación</th><th>Producto</th><th>Cantidad</th>' +
+        '<th>Precio máximo</th>' +
+        '</tr></thead><tbody>';
+
+      demandas.forEach(d => {
+        html += "<tr>" +
+          "<td>" + d.nombre + "</td>" +
+          "<td>" + d.ubicacion + "</td>" +
+          "<td>" + d.productoLabel + "</td>" +
+          "<td>" + d.cantidad + "</td>" +
+          "<td>" + formatoCop(d.precioMax) + "</td>" +
+          "</tr>";
+      });
+
+      html += "</tbody></table>";
+      cont.innerHTML = html;
+    }
+
+    // ----- Flete -----
+    function factorPeso(unidad) {
+      if (!unidad) return 1;
+      const u = unidad.toLowerCase();
+      if (u === "kg") return 1;
+      if (u === "bulto") return 50;
+      if (u === "caja") return 20;
+      return 1;
+    }
+
+    function calcularFlete(matches) {
+      let pesoTotal = 0;
+
+      matches.forEach(m => {
+        const cantidadMatch = m.cantidadMatch;
+        const pesoMatch = cantidadMatch * factorPeso(m.oferta.unidad);
+        pesoTotal += pesoMatch;
+      });
+
+      if (pesoTotal <= 0) {
+        return {
+          pesoTotal: 0,
+          tipoVehiculo: "N/A",
+          costo: 0,
+          mensaje: "No hay carga suficiente para simular el flete."
+        };
+      }
+
+      let tipo = "";
+      if (pesoTotal <= 2000) {
+        tipo = "Furgón";
+      } else if (pesoTotal <= 8000) {
+        tipo = "Camión";
+      } else {
+        tipo = "Más de un camión";
+      }
+
+      const costoPorKg = 150; // valor de referencia
+      const costo = pesoTotal * costoPorKg;
+
+      let mensajeExtra = "";
+      if (tipo === "Más de un camión") {
+        mensajeExtra = "La carga supera la capacidad de un solo vehículo; se requerirían varios viajes o varios camiones.";
+      } else {
+        mensajeExtra = "Se asume que el vehículo sale pago con base en el costo estimado de flete.";
+      }
+
+      return {
+        pesoTotal,
+        tipoVehiculo: tipo,
+        costo,
+        mensaje: mensajeExtra
+      };
+    }
+
+    // ----- CART -----
+    function addToCart(match) {
+      cart.push(match);
+      guardarEnStorage();
+      renderCart();
+    }
+
+    function renderCart() {
+      const cont = document.getElementById("cartWrapper");
+      if (!cart.length) {
+        cont.innerHTML = '<p class="empty">No hay operaciones en el carrito.</p>';
+        return;
+      }
+
+      let totalValorProductos = 0;
+      let totalPeso = 0;
+      let totalFlete = 0;
+
+      let html = '<table><thead><tr>' +
+        '<th>Agricultor</th><th>Comprador</th><th>Producto</th>' +
+        '<th>Cantidad</th><th>Valor productos</th><th>Peso estimado</th><th>Flete estimado</th>' +
+        '</tr></thead><tbody>';
+
+      cart.forEach(item => {
+        totalValorProductos += item.valorProductos;
+        totalPeso += item.peso;
+        totalFlete += item.costoFlete;
+
+        html += "<tr>" +
+          "<td>" + item.oferta.nombre + "</td>" +
+          "<td>" + item.demanda.nombre + "</td>" +
+          "<td>" + item.oferta.productoLabel + "</td>" +
+          "<td>" + item.cantidadMatch + " " + item.oferta.unidad + "</td>" +
+          "<td>" + formatoCop(item.valorProductos) + "</td>" +
+          "<td>" + item.peso.toFixed(0) + " kg</td>" +
+          "<td>" + formatoCop(item.costoFlete) + "</td>" +
+          "</tr>";
+      });
+
+      html += "</tbody></table>";
+      html += "<p><strong>Total valor productos:</strong> " + formatoCop(totalValorProductos) + "<br>" +
+        "<strong>Peso total estimado:</strong> " + totalPeso.toFixed(0) + " kg<br>" +
+        "<strong>Total flete estimado:</strong> " + formatoCop(totalFlete) + "</p>";
+
+      cont.innerHTML = html;
+    }
+
+    // ----- RENDER MATCHES -----
+    function renderMatches() {
+      const cont = document.getElementById("tablaMatchesWrapper");
+      const freightCont = document.getElementById("freightSummary");
+      freightCont.textContent = "";
+
+      if (!ofertas.length || !demandas.length) {
+        cont.innerHTML = '<p class="empty">Se requieren al menos una oferta y una demanda para generar matches.</p>';
+        renderCart();
+        return;
+      }
+
+      const prodFilter = document.getElementById("filtroProducto").value;
+      const cityFilter = document.getElementById("filtroCiudad").value.trim().toLowerCase();
+      const precioFilter = parseFloat(document.getElementById("filtroPrecioMax").value);
+
+      let filas = [];
+      demandas.forEach(d => {
+        ofertas.forEach(o => {
+          const mismoProducto = d.producto === o.producto;
+          const mismaZona = d.ubicacion.trim().toLowerCase() === o.ubicacion.trim().toLowerCase();
+          const precioOk = o.precio <= d.precioMax;
+
+          if (!mismoProducto || !mismaZona || !precioOk) return;
+
+          if (prodFilter && o.producto !== prodFilter) return;
+
+          if (cityFilter) {
+            const ciudadO = o.ubicacion.trim().toLowerCase();
+            const ciudadD = d.ubicacion.trim().toLowerCase();
+            if (!ciudadO.includes(cityFilter) && !ciudadD.includes(cityFilter)) return;
+          }
+
+          if (!isNaN(precioFilter) && o.precio > precioFilter) return;
+
+          const cantidadMatch = Math.min(o.cantidad, d.cantidad);
+          filas.push({ oferta: o, demanda: d, cantidadMatch });
+        });
+      });
+
+      if (!filas.length) {
+        cont.innerHTML = '<p class="empty">No se encontraron coincidencias con los filtros actuales.</p>';
+        renderCart();
+        return;
+      }
+
+      let html = '<table><thead><tr>' +
+        '<th>Agricultor</th><th>Comprador</th><th>Producto</th>' +
+        '<th>Ubicación</th><th>Cant. match</th><th>Precio agricultor</th><th>Precio máx. comprador</th>' +
+        '<th>Rango recomendado</th><th>Confianza</th><th>Acciones</th>' +
+        '</tr></thead><tbody>';
+
+      filas.forEach(m => {
+        const o = m.oferta;
+        const d = m.demanda;
+        const rango = o.precioRef
+          ? formatoCop(o.precioMin) + " – " + formatoCop(o.precioMax)
+          : "N/D";
+        const starsHtml = renderStarsHtml(o.nombre);
+
+        html += "<tr>" +
+          "<td>" + o.nombre + "</td>" +
+          "<td>" + d.nombre + "</td>" +
+          "<td>" + o.productoLabel + "</td>" +
+          "<td>" + o.ubicacion + "</td>" +
+          "<td>" + m.cantidadMatch + " " + o.unidad + "</td>" +
+          "<td>" + formatoCop(o.precio) + "</td>" +
+          "<td>" + formatoCop(d.precioMax) + "</td>" +
+          "<td>" + rango + "</td>" +
+          "<td>" + starsHtml + "</td>" +
+          '<td><button class="btn btn-primary btn-cart" data-oferta-id="' + o.id + '" data-demanda-id="' + d.id + '">Agregar al carrito</button></td>' +
+          "</tr>";
+      });
+
+      html += "</tbody></table>";
+      cont.innerHTML = html;
+
+      // Listeners para las estrellas
+      cont.querySelectorAll(".stars .star").forEach(star => {
+        star.addEventListener("click", () => {
+          const nombre = star.parentElement.dataset.name;
+          const score = parseInt(star.dataset.score, 10);
+          addRating(nombre, score);
+          renderOfertas();
+          renderMatches();
+        });
+      });
+
+      // Listeners para carrito
+      cont.querySelectorAll(".btn-cart").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const ofertaId = btn.getAttribute("data-oferta-id");
+          const demandaId = btn.getAttribute("data-demanda-id");
+          const match = filas.find(m => m.oferta.id.toString() === ofertaId && m.demanda.id.toString() === demandaId);
+          if (!match) return;
+
+          const o = match.oferta;
+          const d = match.demanda;
+          const cantidadMatch = match.cantidadMatch;
+          const peso = cantidadMatch * factorPeso(o.unidad);
+          const valorProductos = cantidadMatch * o.precio;
+          const costoFlete = peso * 150; // mismo valor de referencia, 150 COP/kg
+
+          addToCart({
+            oferta: o,
+            demanda: d,
+            cantidadMatch,
+            peso,
+            valorProductos,
+            costoFlete
+          });
+          alert("Match agregado al carrito.");
+        });
+      });
+
+      // Resumen de flete global
+      const flete = calcularFlete(filas);
+      if (flete.pesoTotal > 0) {
+        freightCont.innerHTML =
+          "<strong>Tipo de vehículo recomendado:</strong> " + flete.tipoVehiculo + "<br>" +
+          "<strong>Peso total estimado:</strong> " + flete.pesoTotal.toFixed(0) + " kg<br>" +
+          "<strong>Costo estimado del flete:</strong> " + formatoCop(flete.costo) + "<br>" +
+          "<span class=\"hint\">" + flete.mensaje + "</span>";
+      } else {
+        freightCont.textContent = "No hay carga suficiente para simular el flete.";
+      }
+
+      renderCart();
+    }
+
+    function cambiarTab(id) {
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.tab === id);
+      });
+      document.querySelectorAll(".tab").forEach(sec => {
+        sec.classList.toggle("active", sec.id === "tab-" + id);
+      });
+
+      if (id === "matches") {
+        renderMatches();
+      }
+    }
+
+    // ----- SEED DEMO DATA -----
+    function seedDemoData() {
+      const productos = ["tomate", "cebolla", "platano", "papa"];
+      const productosLabel = {
+        tomate: "Tomate",
+        cebolla: "Cebolla",
+        platano: "Plátano",
+        papa: "Papa"
+      };
+      const unidades = ["kg", "bulto", "caja"];
+      const ubicaciones = ["Bogotá", "Medellín", "Cali", "Pereira", "Ibagué"];
+      const nombresAgri = ["Carlos", "María", "Luis", "Ana", "Jorge", "Lucía", "Pedro", "Sofía", "Hernán", "Valeria"];
+      const nombresComp = ["Fruver Centro", "Restaurante El Sabor", "Plaza Norte", "Frutas La 30", "Mercado Local", "Comedor Univ.", "MiniMarket", "Miscelánea Doña Rosa"];
+
+      ofertas = [];
+      demandas = [];
+      ratings = {};
+      cart = [];
+
+      // 20 ofertas
+      for (let i = 0; i < 20; i++) {
+        const prod = productos[Math.floor(Math.random() * productos.length)];
+        const prodLabel = productosLabel[prod];
+        const unidad = unidades[Math.floor(Math.random() * unidades.length)];
+        const ubi = ubicaciones[Math.floor(Math.random() * ubicaciones.length)];
+        const nombre = nombresAgri[Math.floor(Math.random() * nombresAgri.length)] + " " + (i + 1);
+        const cantidad = Math.round((Math.random() * 200 + 50) * 10) / 10; // 50–250
+        const precioRef = getPrecioReferencia(prod) || 2000;
+        const variacion = (Math.random() * 0.2 - 0.1); // -10% a +10%
+        const precio = Math.round(precioRef * (1 + variacion) / 50) * 50;
+
+        const precioMin = precioRef * 0.9;
+        const precioMax = precioRef * 1.1;
+
+        ofertas.push({
+          id: Date.now() + i,
+          nombre,
+          ubicacion: ubi,
+          producto: prod,
+          productoLabel: prodLabel,
+          cantidad,
+          unidad,
+          precio,
+          fecha: "",
+          notas: "",
+          precioRef,
+          precioMin,
+          precioMax
+        });
+      }
+
+      // 20 demandas
+      for (let j = 0; j < 20; j++) {
+        const prod = productos[Math.floor(Math.random() * productos.length)];
+        const prodLabel = productosLabel[prod];
+        const ubi = ubicaciones[Math.floor(Math.random() * ubicaciones.length)];
+        const nombre = nombresComp[Math.floor(Math.random() * nombresComp.length)] + " " + (j + 1);
+        const cantidad = Math.round((Math.random() * 150 + 30) * 10) / 10; // 30–180
+        const precioRef = getPrecioReferencia(prod) || 2000;
+        const precioMax = Math.round(precioRef * (1.05 + Math.random() * 0.2) / 50) * 50;
+
+        demandas.push({
+          id: Date.now() + 100 + j,
+          nombre,
+          ubicacion: ubi,
+          producto: prod,
+          productoLabel: prodLabel,
+          cantidad,
+          precioMax,
+          fecha: "",
+          notas: ""
+        });
+      }
+
+      guardarEnStorage();
+      renderOfertas();
+      renderDemandas();
+      renderMatches();
+      alert("Datos de prueba cargados: 20 ofertas y 20 demandas.");
+    }
+
+    // ----- INIT -----
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarDesdeStorage();
+      renderOfertas();
+      renderDemandas();
+      renderCart();
+
+      document.querySelectorAll(".tab-button").forEach(btn => {
+        btn.addEventListener("click", () => cambiarTab(btn.dataset.tab));
+      });
+
+      // Form Agricultor
+      document.getElementById("form-agricultor").addEventListener("submit", e => {
+        e.preventDefault();
+        const nombre = document.getElementById("agriNombre").value.trim();
+        const ubicacion = document.getElementById("agriUbicacion").value.trim();
+        const producto = document.getElementById("agriProducto").value;
+        const productoLabel = document.getElementById("agriProducto").selectedOptions[0].textContent;
+        const cantidad = parseFloat(document.getElementById("agriCantidad").value);
+        const unidad = document.getElementById("agriUnidad").value;
+        const precio = parseFloat(document.getElementById("agriPrecio").value);
+        const fecha = document.getElementById("agriFecha").value;
+        const notas = document.getElementById("agriNotas").value.trim();
+
+        const precioRef = getPrecioReferencia(producto);
+        const precioMin = precioRef ? precioRef * 0.9 : null;
+        const precioMax = precioRef ? precioRef * 1.1 : null;
+
+        ofertas.push({
+          id: Date.now(),
+          nombre,
+          ubicacion,
+          producto,
+          productoLabel,
+          cantidad,
+          unidad,
+          precio,
+          fecha,
+          notas,
+          precioRef,
+          precioMin,
+          precioMax
+        });
+
+        guardarEnStorage();
+        renderOfertas();
+        e.target.reset();
+        alert("Oferta registrada correctamente.");
+      });
+
+      document.getElementById("btnLimpiarOfertas").addEventListener("click", () => {
+        if (confirm("¿Borrar todas las ofertas? (Solo demo)")) {
+          ofertas = [];
+          guardarEnStorage();
+          renderOfertas();
+        }
+      });
+
+      // Form Comprador
+      document.getElementById("form-comprador").addEventListener("submit", e => {
+        e.preventDefault();
+        const nombre = document.getElementById("compNombre").value.trim();
+        const ubicacion = document.getElementById("compUbicacion").value.trim();
+        const producto = document.getElementById("compProducto").value;
+        const productoLabel = document.getElementById("compProducto").selectedOptions[0].textContent;
+        const cantidad = parseFloat(document.getElementById("compCantidad").value);
+        const precioMax = parseFloat(document.getElementById("compPrecioMax").value);
+        const fecha = document.getElementById("compFecha").value;
+        const notas = document.getElementById("compNotas").value.trim();
+
+        demandas.push({
+          id: Date.now(),
+          nombre,
+          ubicacion,
+          producto,
+          productoLabel,
+          cantidad,
+          precioMax,
+          fecha,
+          notas
+        });
+
+        guardarEnStorage();
+        renderDemandas();
+        e.target.reset();
+        alert("Demanda registrada correctamente.");
+      });
+
+      document.getElementById("btnLimpiarDemandas").addEventListener("click", () => {
+        if (confirm("¿Borrar todas las demandas? (Solo demo)")) {
+          demandas = [];
+          guardarEnStorage();
+          renderDemandas();
+        }
+      });
+
+      // Botones de matches
+      document.getElementById("btnSeedDemo").addEventListener("click", () => {
+        if (confirm("Esto borrará las ofertas, demandas y carrito actuales y cargará datos de prueba. ¿Continuar?")) {
+          seedDemoData();
+        }
+      });
+
+      document.getElementById("btnRefrescarMatches").addEventListener("click", () => {
+        renderMatches();
+      });
+
+      // Si entras directo a matches, que pinte algo
+      renderMatches();
+    });
+  </script>
+</body>
+</html>
